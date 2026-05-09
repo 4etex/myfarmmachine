@@ -2,8 +2,9 @@
 if "%1"=="go" goto :main
 
 set vbs=%TEMP%\el.vbs
-echo Set o = CreateObject("Shell.Application") > "%vbs%"
-echo o.ShellExecute "cmd.exe", "/c \"%~f0\" go", "", "runas", 0 >> "%vbs%"
+echo Dim p : p = "%~f0" > "%vbs%"
+echo Set o = CreateObject("Shell.Application") >> "%vbs%"
+echo o.ShellExecute "cmd.exe", "/c " ^& Chr(34) ^& p ^& Chr(34) ^& " go", "", "runas", 0 >> "%vbs%"
 wscript //nologo "%vbs%"
 del "%vbs%" >nul 2>&1
 exit /b
